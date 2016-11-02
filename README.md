@@ -1,5 +1,8 @@
-# Philadelphia_Property_Tax
+# Philadelphia Property Tax
+
 A study of overdue property taxes in Philadelphia County, Pennsylvania, USA
+
+The goal of this project is to allow us to understand how the more aggressive pursuit of overdue property taxes could affect Philadelphia school funding.
 
 ## Where do Philadelphia schools get their income?
 
@@ -9,4 +12,9 @@ This year it also started receiving revenue from the city's decision to permanen
 
 All told, the Mayor's Office of Education estimates that the district gets more than 41 percent of its local revenue from sources other than the property tax."
 
-(Source)[http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools]
+[Source](http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools)
+
+## How much property tax is overdue in Philadelphia?
+
+One [source](http://www.phillymag.com/citified/2015/07/01/philadelphia-tax-delinquency-lien-sale/) put the figure at around $500 million.
+
