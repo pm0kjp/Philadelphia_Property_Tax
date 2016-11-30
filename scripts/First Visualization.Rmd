@@ -1,0 +1,103 @@
+---
+title: "Philadelphia Property Tax Delinquency"
+author: "Joy Payton"
+date: "11/30/2016"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE)
+```
+
+## Load Libraries
+
+```{r}
+library(dplyr)
+```
+
+## Obtain Tax Data 
+
+We can get property tax delinquency data from Philadelphia's Open Data site:
+
+```{r cars}
+csv <- "https://data.phila.gov/api/views/4v5p-qi2q/rows.csv?accessType=DOWNLOAD&bom=true"
+taxData <- read.csv(csv, stringsAsFactors = FALSE)
+```
+
+## Clean Data
+
+Remove columns that don't interest us:
+
+```{r}
+taxDataCleaned <- taxData %>% select(-c(Unit,Lien.Number))
+```
+
+Remove rows that won't help us because they list no owner:
+
+```{r}
+taxDataCleaned <- taxDataCleaned %>% filter(Owner != "")
+```
+
+Clean out the $ found in the money fields and convert to numeric
+
+```{r}
+taxDataCleaned$Principal <- as.numeric(gsub('\\$','',taxDataCleaned$Principal))
+taxDataCleaned$Interest <- as.numeric(gsub('\\$','',taxDataCleaned$Interest))
+taxDataCleaned$Penalty <- as.numeric(gsub('\\$','',taxDataCleaned$Penalty))
+taxDataCleaned$Other <- as.numeric(gsub('\\$','',taxDataCleaned$Other))
+taxDataCleaned$Total <- as.numeric(gsub('\\$','',taxDataCleaned$Total))
+```
+
+Get just 2000-2015 tax amount owed.  2016 represents bills that may not truly
+be in delinquency yet, and prior to 2000 is too far back for us to be interested.
+
+```{r}
+lastFifteenData <- taxDataCleaned %>% filter(Tax.Period < 2016, Tax.Period >= 2000)
+```
+
+## Who are our owners?
+
+As a first exploration into our data, we'll want to see who owes the most taxes,
+in order to understand a bit more about the delinquency landscape in Philadelphia.
+Let's limit our investigation to the last year - 2015.  We'll take only those
+properties that have overdue tax and do some summarizing.
+
+```{r}
+lastFifteenData <- taxDataCleaned %>% filter(Tax.Period < 2016, Tax.Period >= 2000)
+
+
+totalOwedByOwner <- lastFifteenData %>% 
+                    filter(Tax.Period == 2015, Total >0) %>% 
+                    group_by(Owner) %>% 
+                    summarise(TotalOwed = sum(Total), 
+                              NumOverdueProperties = n())
+```
+
+Who are the worst offenders?
+
+```{r}
+worstOffenders <- totalOwedByOwner %>% arrange(desc(TotalOwed))
+as.data.frame(worstOffenders[1:100,])
+```
+
+Let's remove governmental properties.  We want to focus on private owners!
+
+```{r}
+worstOffenders <- worstOffenders %>% filter(Owner != "PHILA HOUSING AUTHORITY", 
+                                            Owner != "CITY OF PHILADELPHIA",
+                                            Owner != "ADMIN OF VET AFFAIRS")
+```
+
+Let's set some data up for some fun visualizations.  We'll create a CSV and
+download it, then load it up in Joy's Google Drive.  That makes it easy to use
+Google Charts to create our "2015 Hall of Shame" for major delinquents.
+
+```{r}
+write.csv(worstOffenders[1:100,],"worstOffenders.csv", row.names = FALSE)
+```
+
+Where did our data end up?
+
+I stashed it [on Github](https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/data/worstOffenders.csv) and [in a Google spreadsheet](https://docs.google.com/spreadsheets/d/1m_r_KC2js6xkHndqqGfWzrkgUW4RvgDTti9tUKhVQ0k/), and there's a 
+Google Charts visualization on CodePen that uses the Google Spreadsheet copy.
+You can see the [code](http://codepen.io/kjoypayton/pen/JbyyJx), or just look at the [visualization](http://codepen.io/kjoypayton/full/JbyyJx/).
