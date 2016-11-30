@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Worst 2015 Philadelphia Tax Delinquents</title>
+  <style type="text/css">
+    #chart_div{
+      height:900px;
+    }
+  </style>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+  <div id="chart_div"></div>
+</body>
+
+  <script type="javascript">
+  // Load the Visualization API and the corechart package.
+  google.charts.load('current', {'packages':['bar']});
+
+  // Set a callback to run when the Google Visualization API is loaded.
+  google.charts.setOnLoadCallback(drawSheetName);
+
+  function drawSheetName() {
+    var queryString = encodeURIComponent('SELECT A, B, C LIMIT 50 ');
+
+    var query = new google.visualization.Query(
+      'https://docs.google.com/spreadsheets/d/1m_r_KC2js6xkHndqqGfWzrkgUW4RvgDTti9tUKhVQ0k/gviz/tq?sheet=Sheet1&headers=1&tq=' + queryString);
+    query.send(handleSampleDataQueryResponse);
+  }
+
+  function handleSampleDataQueryResponse(response) {
+    if (response.isError()) {
+      alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+      return;
+    }
+
+    var data = response.getDataTable();
+    var formatter = new google.visualization.NumberFormat({pattern: '$#,###,###.00'});
+  formatter.format(data, 1); // Apply formatter to second column
+
+
+  var options = {
+      width: 1200,
+      height:800,
+      chart: {
+        title: 'Worst (in Amount Owed) Philadelphia 2015 Property Tax Delinquents',
+        subtitle: 'Amount Owed and Number of Delinquent Properties'
+      },
+    bars: 'horizontal', // Required for Material Bar Charts.
+    series: {
+      0: { axis: 'TotalOwed' }, 
+      1: { axis: 'NumProperties' }
+    },
+    axes: {
+        x: {
+        TotalOwed: {label: 'Amount Owed, USD', side: "top", format:"currency"}, // Bottom x-axis.
+        NumProperties: {label: 'Number of Properties'} //Top x-axis.
+      }
+    }
+  };
+
+
+  var chart = new google.charts.Bar(document.getElementById('chart_div'));
+  chart.draw(data, options);
+  }
+</script>
+</html>
