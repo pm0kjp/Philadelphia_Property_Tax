@@ -200,3 +200,58 @@ I only want the first 11 numbers:
 ```{r}
 toGeocode$trimmedTract <- strtrim(toGeocode$tract,11)
 ```
+
+Alright!  Now we can make the connection to all of the properties across all 
+the years of data we have:
+
+```{r}
+investmentProperties <- merge(investmentProperties, 
+                              toGeocode[,c('lat','long','trimmedTract')], 
+                              by=c("lat","long"))
+```
+
+We now have census tracts for all our investment properties. For our D3 
+visualization, we want to show the total 2015 amount of deadbeat investor unpaid 
+tax per census tract.
+
+```{r}
+investmentPropertiesByTract2015 <- investmentProperties %>%
+  filter(Tax.Period == 2015, Total >=0) %>%
+  group_by(trimmedTract) %>%
+  summarise(totalOwedByTract = sum(Total))
+```
+
+Now we will take the Census Tract GeoJSON file stashed in GitHub, and enrich its
+"properties" section with our summarized data about amount owed per tract. We'll
+make sure that if there's nothing showing as owed on that tract, we put a zero
+in.
+
+```{r}
+tractData <- fromJSON("https://raw.githubusercontent.com/pm0kjp/Philadelphia_Property_Tax/master/data/Census_Tracts_2010.geojson")
+enrichedProperties <- merge(x=tractData$features$properties, y=investmentPropertiesByTract2015, by.x="GEOID10", by.y="trimmedTract", all.x=TRUE)
+enrichedProperties$totalOwedByTract[is.na(enrichedProperties$totalOwedByTract)] <- 0
+```
+
+We can also enrich our GeoJSON with economic data about the tract generally, 
+taken from the Census Bureau itself:
+
+```{r}
+economicData <- read.csv("https://raw.githubusercontent.com/pm0kjp/Philadelphia_Property_Tax/master/data/ACS_10_5YR_DP03.csv", stringsAsFactors = FALSE)
+
+economicDataCleaned <- economicData %>% select(GEO.id2, HC03_VC166, HC01_VC85)
+
+names(economicDataCleaned) <- c('GEOID10', 'PctPoverty','MedianHouseholdIncome')
+
+enrichedProperties <- merge(x=enrichedProperties, y=economicDataCleaned, by="GEOID10", all.x=TRUE)
+```
+
+We'll replace the original "properties" in our GeoJSON with this enriched
+"properties", and make a new JSON file:
+
+```{r}
+tractData$features$properties <- enrichedProperties
+
+myGeoJSON <- toJSON(tractData)
+
+write(myGeoJSON, file="enrichedPhilly.geojson")
+```
