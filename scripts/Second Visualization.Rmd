@@ -1,0 +1,209 @@
+---
+title: "Philadelphia Property Tax Delinquency: Investor Impact"
+author: "Joy Payton"
+date: "11/30/2016"
+output: html_document
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE)
+```
+
+## Load Libraries
+
+```{r}
+library(dplyr)
+library(stringr)
+library(jsonlite)
+```
+
+## Obtain Tax Data 
+
+We can get property tax delinquency data from Philadelphia's Open Data site:
+
+```{r cars}
+csv <- "https://data.phila.gov/api/views/4v5p-qi2q/rows.csv?accessType=DOWNLOAD&bom=true"
+taxData <- read.csv(csv, stringsAsFactors = FALSE)
+```
+
+## Clean Data
+
+Remove columns that don't interest us:
+
+```{r}
+taxDataCleaned <- taxData %>% select(-c(Unit,Lien.Number))
+```
+
+Remove rows that won't help us because they list no owner:
+
+```{r}
+taxDataCleaned <- taxDataCleaned %>% filter(Owner != "")
+```
+
+Clean out the $ found in the money fields and convert to numeric
+
+```{r}
+taxDataCleaned$Principal <- as.numeric(gsub('\\$','',taxDataCleaned$Principal))
+taxDataCleaned$Interest <- as.numeric(gsub('\\$','',taxDataCleaned$Interest))
+taxDataCleaned$Penalty <- as.numeric(gsub('\\$','',taxDataCleaned$Penalty))
+taxDataCleaned$Other <- as.numeric(gsub('\\$','',taxDataCleaned$Other))
+taxDataCleaned$Total <- as.numeric(gsub('\\$','',taxDataCleaned$Total))
+```
+
+Get just 2000-2015 tax amount owed.  2016 represents bills that may not truly
+be in delinquency yet, and prior to 2000 is too far back for us to be interested.
+
+```{r}
+lastFifteenData <- taxDataCleaned %>% filter(Tax.Period < 2016, Tax.Period >= 2000)
+```
+
+## What is the impact of investors?
+
+As a secondary exploration into our data, we'll want to see what the impact of
+investors is (we saw some interesting trends of large investors in our ["Worst
+100 Tax Delinquents" visualization](http://codepen.io/kjoypayton/full/JbyyJx/)).
+
+Let's limit our investigation to the last year - 2015.  We'll take only those
+properties that have overdue tax and do some summarizing.  We consider a 
+"deadbeat investor" to be someone with three or more overdue properties.
+
+```{r}
+investors <- lastFifteenData %>% 
+                    filter(Tax.Period == 2015, Total >0) %>% 
+                    group_by(Owner) %>% 
+                    summarise(TotalOwed = sum(Total), 
+                              NumOverdueProperties = n()) %>%
+                    arrange(desc(NumOverdueProperties)) %>% 
+                    filter(NumOverdueProperties >=3)
+```
+
+We have 1449 potential investors... but we know that some are actually 
+governmental agencies.  Let's remove those as we discover them:
+
+```{r}
+investors <- investors %>% filter(Owner != "PHILA HOUSING AUTHORITY")
+investors <- investors %>% filter(Owner != "CITY OF PHILADELPHIA")
+investors <- investors %>% filter(Owner != "ADMIN OF VET AFFAIRS")
+investors <- investors %>% filter(Owner != "OFFICE OF THE DISTRICT AT")
+investors <- investors %>% filter(Owner != "ADMIN OF VETS AFFAIRS")
+investors <- investors %>% filter(Owner != "CITY OF PHILA")
+investors <- investors %>% filter(Owner != "ADMIN OF VETERAN AFFAIRS")
+investors <- investors %>% filter(Owner != "ADM OF VET AFFAIRS")
+```
+
+What's the impact of deadbeat investors?
+
+```{r}
+sum(investors$TotalOwed)
+sum(investors$NumOverdueProperties)
+```
+
+We have $5.6 million due on 6500 properties... a huge impact.  We want to 
+concentrate on these owners who are unlikely (due to the number of properties)
+to be simple homeowners down on their luck.  Let's dig a bit deeper.  
+
+We wonder where these investor-owned deadbeat properties are distributed across 
+the city. Our data doesn't include zip code, but it does have geocoded 
+coordinates.  We can do something with that!
+
+Let's look at Census tracts.  These are helpful because they are small enough to
+give us some neighborhood-by-neighborhood comparison of how many investor-
+owned properties are in delinquency.  Because the Census Bureau also collects a
+number of demographic data on the tract level, we can also look to see if there
+are any patterns.  Do deadbeat investors take on properties in economically 
+strapped neighborhoods? 
+
+First, let's get all of our investment properties, and set up our latitude and 
+longitude fields. Once again, let's only worry about 2015.
+
+```{r}
+investmentProperties <- taxDataCleaned %>% 
+                        filter(Tax.Period == 2015, Total >0) %>% 
+                        filter (Owner %in% investors$Owner)
+
+investmentProperties$lat <- as.numeric(str_match(investmentProperties$Coordinates, 
+                                               "\\((\\d+.\\d+),")[,2])
+investmentProperties$long <- as.numeric(str_match(investmentProperties$Coordinates, 
+                                                ",\\s+(.+)\\)")[,2])
+```
+
+Some of those properties might have the same latitude and longitude, and don't 
+need to be reverse geocoded twice.  Let's get the definitive list of unique 
+locations to look up tracts for:
+
+```{r}
+toGeocode <- investmentProperties[!duplicated(investmentProperties$Coordinates),]
+```
+
+
+Now let's use an FCC API to get the census tract for this latitude and 
+longitude!
+
+```{r}
+getTract <- function(latitude, longitude)
+{
+  tract <- vector(length = length(latitude))
+  for (i in 1:length(latitude)) {
+    lookup <- paste("http://data.fcc.gov/api/block/find?format=json&latitude=", 
+                    latitude[i], "&longitude=", longitude[i],
+                    sep="")
+    response <- fromJSON(txt=lookup)
+    tract[i] <- response$Block$FIPS
+  }
+  return(tract)
+}
+```
+
+This next bit takes awhile!  We can do it in batches of 1000 to give a tiny 
+bit of throttling...  We'll save it for use later also!
+
+```{r}
+toGeocode$tract<-NA
+toGeocode$tract[1:1000]<-getTract(toGeocode$lat[1:1000], toGeocode$long[1:1000])
+toGeocode$tract[1001:2000]<-getTract(toGeocode$lat[1001:2000], toGeocode$long[1001:2000])
+toGeocode$tract[2001:3000]<-getTract(toGeocode$lat[2001:3000], toGeocode$long[2001:3000])
+toGeocode$tract[3001:4000]<-getTract(toGeocode$lat[3001:4000], toGeocode$long[3001:4000])
+toGeocode$tract[4001:5000]<-getTract(toGeocode$lat[4001:5000], toGeocode$long[4001:5000])
+toGeocode$tract[5001:6000]<-getTract(toGeocode$lat[5001:6000], toGeocode$long[5001:6000])
+toGeocode$tract[6001:length(toGeocode$tract)]<-getTract(toGeocode$lat[6001:length(toGeocode$tract)], toGeocode$long[6001:length(toGeocode$tract)])
+```
+
+The code that's passed in includes precision at the sub-tract level we don't 
+care about.  Let's fix that, and save the coordinate / tract table so that we
+don't have to do that crazy long API call series again!
+
+```{r}
+write.csv(toGeocode[,c('lat','long','tract')],"censusTractsByLatLong.csv",row.names = FALSE)
+```
+
+If we're re-running this script, we may want to skip the API calls of every 
+property and do the following instead, to just geocode the ones that need it:
+
+```{r}
+toGeocode <- investmentProperties[!duplicated(investmentProperties$Coordinates),]
+tractsIKnow<-read.csv("https://raw.githubusercontent.com/pm0kjp/Philadelphia_Property_Tax/master/data/censusTractsByLatLong.csv")
+toGeocode <- merge(x=toGeocode, y=tractsIKnow, 
+                   by=c('lat','long'), 
+                   all.x=TRUE, sort=FALSE)
+tractsIDontKnow <- toGeocode[is.na(toGeocode$tract),]
+toGeocode <- toGeocode[!is.na(toGeocode$tract),]
+tractsIDontKnow <- tractsIDontKnow %>% filter(!is.na(lat),!is.na(long))
+tractsIDontKnow$tract<-getTract(tractsIDontKnow$lat, tractsIDontKnow$long)
+toGeocode <- bind_rows(toGeocode, tractsIDontKnow)
+# Now we have an even richer dataset, and I can replace my GitHub file
+# with a new CSV!
+write.csv(toGeocode[,c('lat','long','tract')],"censusTractsByLatLong.csv",row.names = FALSE)
+```
+
+Either way, I need to trim my tracts, because there's too much precision.
+I only want the first 11 numbers:
+
+```{r}
+toGeocode$trimmedTract <- strtrim(toGeocode$tract,11)
+```
+
+Where did our data end up?
+
+I stashed it [on Github](https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/data/worstOffenders.csv) and [in a Google spreadsheet](https://docs.google.com/spreadsheets/d/1m_r_KC2js6xkHndqqGfWzrkgUW4RvgDTti9tUKhVQ0k/), and there's a 
+Google Charts visualization on CodePen that uses the Google Spreadsheet copy.
+You can see the [code](http://codepen.io/kjoypayton/pen/JbyyJx), or just look at the [visualization](http://codepen.io/kjoypayton/full/JbyyJx/).
