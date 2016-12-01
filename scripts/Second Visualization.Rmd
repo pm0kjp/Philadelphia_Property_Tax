@@ -176,8 +176,7 @@ don't have to do that crazy long API call series again!
 write.csv(toGeocode[,c('lat','long','tract')],"censusTractsByLatLong.csv",row.names = FALSE)
 ```
 
-If we're re-running this script, we may want to skip the API calls of every 
-property and do the following instead, to just geocode the ones that need it:
+If we're re-running this script, we may want to skip the API calls of every property and do the following instead, to just geocode the ones that need it:
 
 ```{r}
 toGeocode <- investmentProperties[!duplicated(investmentProperties$Coordinates),]
@@ -201,9 +200,3 @@ I only want the first 11 numbers:
 ```{r}
 toGeocode$trimmedTract <- strtrim(toGeocode$tract,11)
 ```
-
-Where did our data end up?
-
-I stashed it [on Github](https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/data/worstOffenders.csv) and [in a Google spreadsheet](https://docs.google.com/spreadsheets/d/1m_r_KC2js6xkHndqqGfWzrkgUW4RvgDTti9tUKhVQ0k/), and there's a 
-Google Charts visualization on CodePen that uses the Google Spreadsheet copy.
-You can see the [code](http://codepen.io/kjoypayton/pen/JbyyJx), or just look at the [visualization](http://codepen.io/kjoypayton/full/JbyyJx/).
