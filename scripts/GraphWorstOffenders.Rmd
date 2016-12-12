@@ -1,0 +1,109 @@
+---
+title: "Philadelphia Property Tax Delinquency"
+author: "Joy Payton"
+date: "11/30/2016"
+output: html_document
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE)
+```
+
+## Load Libraries
+
+```{r}
+library(dplyr)
+library(stringr)
+library(jsonlite)
+```
+
+## Obtain the data
+
+We use get the cleaned, Census-tract enriched data from the R object I created 
+in my TaxDataSetup script.  Let's check it out:
+```{r}
+taxDataCleaned <- completeRows
+str(taxDataCleaned)
+summary(taxDataCleaned)
+```
+
+## Clean Data
+
+Remove rows that won't help us because they list no owner:
+
+```{r}
+taxDataCleaned <- taxDataCleaned %>% filter(Owner != "")
+```
+
+Clean out the $ found in the money fields and convert to numeric
+
+```{r}
+taxDataCleaned$Total <- as.numeric(gsub('\\$','',taxDataCleaned$Total))
+taxDataCleaned$Market.Value <- as.numeric(gsub('\\$','',taxDataCleaned$Market.Value))
+```
+
+## Who are our owners?
+
+As a first exploration into our data, we'll want to see who owes the most taxes,
+in order to understand a bit more about the delinquency landscape in Philadelphia.
+Let's limit our investigation to 2000-2015.  We'll take only those
+properties that have overdue tax and do some summarizing.
+
+```{r}
+lastSixteenData <- taxDataCleaned %>% filter(Tax.Period < 2016, Tax.Period >= 2000)
+
+
+totalOwedByOwner <- lastSixteenData %>% 
+                    filter(Total >0) %>% 
+                    group_by(Owner,Tax.Period) %>% 
+                    summarise(TotalOwed = sum(Total), 
+                              NumOverdueProperties = n())
+```
+
+Who were the worst offenders for 2000?  For 2015?
+
+```{r}
+worstOffenders2000 <- totalOwedByOwner %>% filter(Tax.Period == 2000) %>%
+  arrange(desc(TotalOwed))
+as.data.frame(worstOffenders2000[1:100,])
+worstOffenders2015 <- totalOwedByOwner %>% filter(Tax.Period == 2015) %>%
+  arrange(desc(TotalOwed))
+as.data.frame(worstOffenders2015[1:100,])
+```
+
+Let's remove governmental properties.  We want to focus on private owners! 
+We'll just remove the ones we see... we might have to do this a few more times.
+
+```{r}
+totalOwedByOwner <- totalOwedByOwner %>% 
+  filter(Owner != "PHILA HOUSING AUTHORITY", 
+         Owner != "CITY OF PHILADELPHIA",
+         Owner != "ADMIN OF VET AFFAIRS", 
+         Owner != "PENNDOT")
+```
+
+What if I wanted to get just the worst 50 for every year?
+
+```{r}
+worstEachYear <- totalOwedByOwner %>% 
+                    group_by(Tax.Period) %>%
+                    mutate(Rank = rank(-TotalOwed, ties.method="max"))
+
+worstEachYear <- worstEachYear %>%
+                    filter(Rank <=50) 
+
+```
+
+Let's set some data up for some fun visualizations.  We'll create a CSV and
+download it, then load it up in Joy's Google Drive.  That makes it easy to use
+Google Charts to create our "2015 Hall of Shame" for major delinquents.
+
+```{r}
+write.csv(worstEachYear,"worstEachYear.csv", row.names = FALSE)
+```
+
+Where did our data end up?
+
+I stashed it [on Github](https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/data/worstOffenders.csv) and [in a Google spreadsheet](https://docs.google.com/spreadsheets/d/1m_r_KC2js6xkHndqqGfWzrkgUW4RvgDTti9tUKhVQ0k/), and there's a 
+Google Charts visualization on CodePen that uses the Google Spreadsheet copy.
+You can see the [code](http://codepen.io/kjoypayton/pen/JbyyJx), or just look at the [visualization](http://codepen.io/kjoypayton/full/JbyyJx/).

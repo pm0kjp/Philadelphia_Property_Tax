@@ -42,7 +42,9 @@ rm(csv)
 ```
 
 Finally, we can obtain a geoJSON file reflecting the Census tracts in 
-Philadelphia:
+Philadelphia.  This is helpful at this point for understanding the relationship
+between various fields, such as tract and full geoID, for example.  We won't use
+it otherwise in this script.
 
 ```{r}
 tractData <- fromJSON("http://data.phl.opendata.arcgis.com/datasets/8bc0786524a4486bb3cf0f9862ad0fbf_0.geojson")
@@ -258,5 +260,5 @@ additionalCompleteRows <- merge(x=incompleteRows, y=tractsIKnow,
                                 by="Coordinates", all.x=TRUE)
 completeRows <- bind_rows(completeRows, 
           additionalCompleteRows[!is.na(additionalCompleteRows$Census.Tract),])
+incompleteRows <- additionalCompleteRows[is.na(additionalCompleteRows$Census.Tract),]
 ```
-
