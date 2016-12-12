@@ -1,4 +1,4 @@
-"Census.Tract","Tax.Period","totalOwedByTract"
+"tract","year","tax"
 1,2000,715
 1,2003,3715.24
 1,2004,2935.81
