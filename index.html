@@ -1,17 +1,21 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <!-- Template by html.am -->
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>Philadelphia 2015 Overdue Property Tax</title>
-		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.17.0/d3-legend.min.js"></script>
-  
-<script src="https://d3js.org/queue.v1.min.js"></script>
-		<style type="text/css">
-		
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Philadelphia 2015 Overdue Property Tax</title>
+
+	<!-- Load Scripts I need -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.17.0/d3-legend.min.js"></script>
+	<script src="https://d3js.org/queue.v1.min.js"></script>
+
+	<!-- Embed CSS for ease of turning in final project -->
+
+	<style type="text/css">
+
 		body{
 			margin: 0;
 			padding: 0;
@@ -21,12 +25,12 @@
 			font-family:'Raleway', sans-serif;
 			line-height: 1.5em;
 		}
-		
+
 		.script_link {
-		font-size: 0.8em;
-		text-align: center;
-    margin: 20px auto;
-}
+			font-size: 0.8em;
+			text-align: center;
+			margin: 20px auto;
+		}
 
 		#nav{
 			position: absolute;
@@ -35,10 +39,10 @@
 			left: 0;
 			width: 350px; /* Width of navigation frame */
 			height: 100%;
-			overflow: auto; /* Disables scrollbars on the navigation frame. To enable scrollbars, change "hidden" to "scroll" */
+			overflow: auto; 
 			background: #eee;
 		}
-		
+
 		main{
 			position: fixed;
 			top: 0; 
@@ -48,17 +52,18 @@
 			overflow: auto; 
 			background: #fff;
 		}
-		 #footnotes {
-		 	margin-top:3em;
-		 	font-size: 0.6em;
-		 	word-wrap: break-all;
-		 }
 
-sup { vertical-align: top; position: relative; top: -0.5em; }		 
+		#footnotes {
+			margin-top:3em;
+			font-size: 0.6em;
+			word-wrap: break-all;
+		}
+
+		sup { vertical-align: top; position: relative; top: -0.5em; }		 
 		.innertube{
 			margin: 15px; /* Provides padding for the content */
 		}
-		
+
 		p {
 			color: #555;
 			font-size:1em;
@@ -70,225 +75,229 @@ sup { vertical-align: top; position: relative; top: -0.5em; }
 			margin: 0;
 			padding: 0;
 		}
-		
+
 		nav ul a {
 			color: darkgreen;
 			text-decoration: none;
 		}
-				
+
 		/*IE6 fix*/
 		* html body{
 			padding: 0 0 0 230px; /* Set the last value to the width of the navigation frame */
 		}
-		
+
 		* html main{ 
 			height: 100%; 
 			width: 100%; 
 		}
-		
-
-	#google_chart_div{
-  height:900px;
-  margin-top:2em;
-}
-
-	p {
-  margin:10px;
-}
-
-#d3_container {
-  padding-top: 1em;
-  width: "100%";
-  margin:1em auto;
-  background:oldlace;
-}
-
-h1, h2, .d3_map{
-  margin:4px auto;
-  text-align:center;
-}
-.d3_background {
-  fill: #eee;
-  pointer-events: all;
-}
-
-.d3_map-layer {
-  fill: #fff;
-  stroke: #aaa;
-  width: 100%;
-}
-
-.d3_map-area {
-  margin:0px auto;
-  width:75%;
-}
 
 
-    .hidden {
-        display: none;
-    }
-    div.d3_tooltip {
-        color: #222;
-        background-color: #eee;
-        padding: .5em;
-        text-shadow: #f5f5f5 0 1px 0;
-        border: 1px solid grey;
-        border-radius: 2px;
-        opacity: 0.8;
-        position: absolute;
-    }
+		#google_chart_div{
+			height:900px;
+			margin-top:2em;
+		}
 
-#d3_map {
-padding-bottom:100px;
-}
-</style>
+		p {
+			margin:10px;
+		}
+
+		#d3_container {
+			padding-top: 1em;
+			width: "100%";
+			margin:1em auto;
+			background:oldlace;
+		}
+
+		h1, h2, .d3_map{
+			margin:4px auto;
+			text-align:center;
+		}
+		.d3_background {
+			fill: #eee;
+			pointer-events: all;
+		}
+
+		.d3_map-layer {
+			fill: #fff;
+			stroke: #aaa;
+			width: 100%;
+		}
+
+		.d3_map-area {
+			margin:0px auto;
+			width:75%;
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		div.d3_tooltip {
+			color: #222;
+			background-color: #eee;
+			padding: .5em;
+			text-shadow: #f5f5f5 0 1px 0;
+			border: 1px solid grey;
+			border-radius: 2px;
+			opacity: 0.8;
+			position: absolute;
+		}
+
+		#d3_map {
+			padding-bottom:100px;
+		}
+	</style>
 </head>
-	
-<body>		
-<main>
-	<div class="innertube">
-		<h1>Worst 2015 Philadelphia Tax Delinquents</h1>
-		<p class="script_link"><a href="https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/scripts/First_Visualization.Rmd" target="_blank">See the R script that set up the following visualization.</a></p>
-		<div id="google_chart_div"></div> 
-		<p></p>
-				  <div id="d3_container">
-  <h1>Philadelphia 2015 Deadbeat Investor Impact</h1>
 
-  		<p class="script_link"><a href="https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/scripts/Second_Visualization.Rmd" target="_blank">See the R script that set up the following visualization.</a></p>
+<body>	
 
+	<!-- Main content pane -->
 
-  <p style="text-align:center">Hover to see overdue property tax and other statistics, click to change zoom.</p>
-
-
-   <svg id="d3_map"></svg>
-  </div>
-
+	<main>
+		<div class="innertube">
+			<h1>Worst 2015 Philadelphia Tax Delinquents</h1>
+			<p class="script_link"><a href="https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/scripts/First_Visualization.Rmd" target="_blank">See the R script that set up the following visualization.</a></p>
+			<div id="google_chart_div"></div> 
+			<p></p>
+			<div id="d3_container">
+				<h1>Philadelphia 2015 Deadbeat Investor Impact</h1>
+				<p class="script_link"><a href="https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/scripts/Second_Visualization.Rmd" target="_blank">See the R script that set up the following visualization.</a></p>
+				<p style="text-align:center">Hover to see overdue property tax and other statistics, click to change zoom.</p>
+				<svg id="d3_map"></svg>
 			</div>
-		</main>
-	
-		<nav id="nav">
-			<div class="innertube">
-			
+		</div>
+	</main>
+	<nav id="nav">
+
+		<!-- Left Pane -->
+
+		<div class="innertube">
 			<h3>A Project by Joy Payton</h3>
-<p><b>Background:</b>  The City of Philadelphia (which is also a county) is one of the nation's poorest large cities, according to The Pew Charitable Trusts <sup><a href="#fn1">1</a></sup>.  With a poverty rate over 25% and large areas of the city experiencing blight, it is more important than ever that property taxes be collected promptly and correctly, to bolster city schools (which receive 55% of property tax, and are struggling <sup><a href="#fn2">2</a></sup>) and other important city budgets.  However, property tax delinquency has been largely ignored and unenforced.  A Philadelphia Inquirer investigation in 2013 shows that at least 59% of delinquent properties are owned by investors, not poverty-stricken families unable to pay. <sup><a href="#fn3">3</a></sup> </p>
+			<p><b>Background:</b>  The City of Philadelphia (which is also a county) is one of the nation's poorest large cities, according to The Pew Charitable Trusts <sup><a href="#fn1">1</a></sup>.  With a poverty rate over 25% and large areas of the city experiencing blight, it is more important than ever that property taxes be collected promptly and correctly, to bolster city schools (which receive 55% of property tax, and are struggling <sup><a href="#fn2">2</a></sup>) and other important city budgets.  However, property tax delinquency has been largely ignored and unenforced.  A Philadelphia Inquirer investigation in 2013 shows that at least 59% of delinquent properties are owned by investors, not poverty-stricken families unable to pay. <sup><a href="#fn3">3</a></sup> </p>
 
-<div id="footnotes">
-  <p><a name="fn1">1</a>. <a href="http://www.philly.com/philly/news/politics/mayor/295762921.html" target="_blank">http://www.philly.com/philly/news/politics/mayor/295762921.html</a></p>
-  <p><a name="fn2">2</a>. <a href = "http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools" target="_blank">http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools</a></p>
-  <p><a name="fn3">3</a>. <a href = "http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion" target="_blank">http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion</a></p>
+			<div id="footnotes">
+				<p><a name="fn1">1</a>. <a href="http://www.philly.com/philly/news/politics/mayor/295762921.html" target="_blank">http://www.philly.com/philly/news/politics/mayor/295762921.html</a></p>
+				<p><a name="fn2">2</a>. <a href = "http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools" target="_blank">http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools</a></p>
+				<p><a name="fn3">3</a>. <a href = "http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion" target="_blank">http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion</a></p>
 
-</div>
 			</div>
-		</nav>
+		</div>
+	</nav>
+
+	<!-- This Google Charts script must be loaded only after the DOM exists -->
+
 	<script>
 
 // Load the Visualization API and the corechart package.
-  google.charts.load('current', {'packages':['bar']});
+google.charts.load('current', {'packages':['bar']});
 
-  // Set a callback to run when the Google Visualization API is loaded.
-  google.charts.setOnLoadCallback(drawSheetName);
+// Set a callback to run when the Google Visualization API is loaded.
+google.charts.setOnLoadCallback(drawSheetName);
 
-  // This function does All The Things.
+// This function does All The Things.
 
-  function drawSheetName() {
-  
-    // Set up my query statement for my Google Spreadsheet, which I've 
-    // already prepared in a prior step.  Tell which columns I want -- A, B, and C--
-    // as well as how many rows.  I chose 50, because more than that starts to be 
-    // overwhelming.
-   
-    var queryString = encodeURIComponent('SELECT A, B, C LIMIT 50 ');
+function drawSheetName() {
 
-    // Prepare the actual query
-    var query = new google.visualization.Query(
-    
-    // I got the link below from the "Share" button on my Google Sheet.
-  'https://docs.google.com/spreadsheets/d/1m_r_KC2js6xkHndqqGfWzrkgUW4RvgDTti9tUKhVQ0k/gviz/tq?sheet=Sheet1&headers=1&tq=' + queryString);
-    
-    // Send the query!  When a response comes back, send it to 
-    // handleSampleDataQueryResponse.  I could have also called that response
-    // function anything else, like BananaSplitsAreTasty, but I tried to name
-    // it something that would help me know what it actually does.
-   
-    query.send(handleSampleDataQueryResponse);
-  }
+// Set up my query statement for my Google Spreadsheet, which I've 
+// already prepared in a prior step.  Tell which columns I want -- A, B, and C--
+// as well as how many rows.  I chose 50, because more than that starts to be 
+// overwhelming.
 
-  function handleSampleDataQueryResponse(response) {
-    
-    // in case an error comes back, please tell us!
-    if (response.isError()) {
-      alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-      return;
-    }
-    
-    // if there's no error, get the data out of the response.
-    var data = response.getDataTable();
-    
-    // set up the way I want money to be displayed.
-    var formatter = new google.visualization.NumberFormat({pattern: '$#,###,###.00'});
-    // Apply formatter to second column -- we start counting at 0.
-    formatter.format(data, 1); 
-  
-  // set up some look-and-feel parameters
-    
-  var options = {
-  	   legend: {position: 'none'},
-      width: 800,
-      height:800,
-      chart: {
-        title: 'Worst (in Amount Owed) Philadelphia 2015 Property Tax Delinquents',
-        subtitle: 'Amount Owed in Blue and Number of Delinquent Properties in Red'
-      },
-    bars: 'horizontal', // Required for Material Bar Charts with 2 axes in one dimension
-    series: {
-      0: { axis: 'TotalOwed' },  // first axis in x dimension
-      1: { axis: 'NumProperties' } // second axis in the x dimension
-    },
+var queryString = encodeURIComponent('SELECT A, B, C LIMIT 50 ');
+
+// Prepare the actual query
+var query = new google.visualization.Query(
+
+// I got the link below from the "Share" button on my Google Sheet.
+'https://docs.google.com/spreadsheets/d/1m_r_KC2js6xkHndqqGfWzrkgUW4RvgDTti9tUKhVQ0k/gviz/tq?sheet=Sheet1&headers=1&tq=' + queryString);
+
+// Send the query!  When a response comes back, send it to 
+// handleSampleDataQueryResponse.  I could have also called that response
+// function anything else, like BananaSplitsAreTasty, but I tried to name
+// it something that would help me know what it actually does.
+
+query.send(handleSampleDataQueryResponse);
+}
+
+function handleSampleDataQueryResponse(response) {
+
+// in case an error comes back, please tell us!
+if (response.isError()) {
+	alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+	return;
+}
+
+// if there's no error, get the data out of the response.
+var data = response.getDataTable();
+
+// set up the way I want money to be displayed.
+var formatter = new google.visualization.NumberFormat({pattern: '$#,###,###.00'});
+// Apply formatter to second column -- we start counting at 0.
+formatter.format(data, 1); 
+
+// set up some look-and-feel parameters
+
+var options = {
+	legend: {position: 'none'},
+	width: 800,
+	height:800,
+	chart: {
+		title: 'Worst (in Amount Owed) Philadelphia 2015 Property Tax Delinquents',
+		subtitle: 'Amount Owed in Blue and Number of Delinquent Properties in Red'
+	},
+bars: 'horizontal', // Required for Material Bar Charts with 2 axes in one dimension
+series: {
+0: { axis: 'TotalOwed' },  // first axis in x dimension
+1: { axis: 'NumProperties' } // second axis in the x dimension
+},
 
 
-    axes: {
-        x: {
-        TotalOwed: {label: 'Amount Owed, USD', side: "top", format:"currency",  textStyle:{color: 'blue'}}, // Top x-axis.
-        NumProperties: {label: 'Number of Properties'} //Bottom x-axis.
-      }
-    }
-  };
+axes: {
+	x: {
+TotalOwed: {label: 'Amount Owed, USD', side: "top", format:"currency",  textStyle:{color: 'blue'}}, // Top x-axis.
+NumProperties: {label: 'Number of Properties'} //Bottom x-axis.
+}
+}
+};
 
-  // I'm all set up, so draw it, and please draw it in the "chart_div" spot
-  // I set up in my html.
+// I'm all set up, so draw it, and please draw it in the "chart_div" spot
+// I set up in my html.
 
-  var chart = new google.charts.Bar(document.getElementById('google_chart_div'));
-  chart.draw(data, options);
-  }
- </script>
- <script>
-var selection = d3.select("#d3_container"); 
-console.log();
-width = selection._groups["0"]["0"].clientWidth;
-var height = .8*width,
-    centered;
-var tooltip = d3.select('body').append('div')
-            .attr('class', 'hidden d3_tooltip');
+var chart = new google.charts.Bar(document.getElementById('google_chart_div'));
+chart.draw(data, options);
+}
+</script>
+
+<!-- This d3 script must be loaded only after the DOM exists -->
+
+<script>
+	var selection = d3.select("#d3_container"); 
+	console.log();
+	width = selection._groups["0"]["0"].clientWidth;
+	var height = .8*width,
+	centered;
+	var tooltip = d3.select('body').append('div')
+	.attr('class', 'hidden d3_tooltip');
 // Define color scale
 var color = d3.scaleLinear()
-  .domain([0, 100000])
-  .range(['#fff', '#1d4418']);
+.domain([0, 100000])
+.range(['#fff', '#1d4418']);
 
 var svg = d3.select("svg");
 
 svg.append("g")
-  .attr("class", "legendLinear")
-  .attr("transform", "translate(20,20)");
+.attr("class", "legendLinear")
+.attr("transform", "translate(20,20)");
 
 var legendLinear = d3.legendColor()
-  .shapeWidth(70)
-  .orient('vertical')
-  .scale(color)
-  .cells(11)
-  .labelFormat(d3.format("$,.0f"));
+.shapeWidth(70)
+.orient('vertical')
+.scale(color)
+.cells(11)
+.labelFormat(d3.format("$,.0f"));
 
 svg.select(".legendLinear")
-  .call(legendLinear);
+.call(legendLinear);
 
 var projection = d3.geoMercator()
 .scale(110*width)
@@ -297,106 +306,99 @@ var projection = d3.geoMercator()
 .translate([width / 2, .38*width]);
 
 var path = d3.geoPath()
-  .projection(projection);
+.projection(projection);
 
 // Set svg width & height
 var svg = d3.select('svg#d3_map')
-  .attr('width', "100%")
-  .attr('height', height);
+.attr('width', "100%")
+.attr('height', height);
 
 
 var g = svg.append('g')
 .attr('class', "d3_map-area");
 
 var mapLayer = g.append('g')
-  .classed('d3_map-layer', true);
+.classed('d3_map-layer', true);
 
 queue()
-	.defer(d3.json, 'https://raw.githubusercontent.com/pm0kjp/Philadelphia_Property_Tax/master/data/enrichedPhilly.geojson')
-	.await(makeMyMap);
+.defer(d3.json, 'https://raw.githubusercontent.com/pm0kjp/Philadelphia_Property_Tax/master/data/enrichedPhilly.geojson')
+.await(makeMyMap);
 // Load map data
 function makeMyMap(error, mapData) {
-  var features = mapData.features;
+	var features = mapData.features;
 
 
-  // Draw each tract as a path
-  mapLayer.selectAll('path')
-      .data(features)
-    .enter().append('path')
-      .attr('d', path)
-      .attr('vector-effect', 'non-scaling-stroke')
-      .style('fill', function(d) {
-  return(color(d.properties.totalOwedByTract))
-  })
-      .on('mouseover', mouseover)
-      .on('mouseout', mouseout)
-      .on('click', clicked)
-  ;
+// Draw each tract as a path
+mapLayer.selectAll('path')
+.data(features)
+.enter().append('path')
+.attr('d', path)
+.attr('vector-effect', 'non-scaling-stroke')
+.style('fill', function(d) {
+	return(color(d.properties.totalOwedByTract))
+})
+.on('mouseover', mouseover)
+.on('mouseout', mouseout)
+.on('click', clicked)
+;
 }
 
 
 // When clicked, zoom in
 function clicked(d) {
-  var x, y, k;
+	var x, y, k;
 
-  // Compute centroid of the selected path
-  if (d && centered !== d) {
-    var centroid = path.centroid(d);
-    x = centroid[0];
-    y = centroid[1];
-    k = 4;
-    centered = d;
-  } else {
-    x = width / 2;
-    y = (width*.7) / 2;
-    k = 1;
-    centered = null;
-  }
+// Compute centroid of the selected path
+if (d && centered !== d) {
+	var centroid = path.centroid(d);
+	x = centroid[0];
+	y = centroid[1];
+	k = 4;
+	centered = d;
+} else {
+	x = width / 2;
+	y = (width*.7) / 2;
+	k = 1;
+	centered = null;
+}
 
-  // Highlight the clicked tract
-  mapLayer.selectAll('path')
-    .style('fill', function(d){return centered && d===centered ? 'yellow' :  function(d) {return(color(d.properties.totalOwedByTract));};
-  })
+// Highlight the clicked tract
+mapLayer.selectAll('path')
+.style('fill', function(d){return centered && d===centered ? 'yellow' :  function(d) {return(color(d.properties.totalOwedByTract));};
+})
 
-  // Zoom
-  g.transition()
-    .duration(1000)
-    .attr('transform', 'translate(' + width / 2 + ',' + (width*.7) / 2 + ')scale(' + k + ')translate(' + -x + ',' + -y + ')');
+// Zoom
+g.transition()
+.duration(1000)
+.attr('transform', 'translate(' + width / 2 + ',' + (width*.7) / 2 + ')scale(' + k + ')translate(' + -x + ',' + -y + ')');
 }
 
 function mouseover(d){
-  // Highlight hovered 
-   var mouse = d3.mouse(svg.node()).map(function(d) {
-                        return parseInt(d);
-                    });
-  var tooltext = "<p>" + d.properties.NAMELSAD10 +
-          '</p><p>Amount of 2015 Unpaid Property Tax <br/>by "Deadbeat Investors": $' + d3.format(",.2f")(d.properties.totalOwedByTract) +
-          "</p><p>Median Household Income (2010 Census): $" + d3.format(",.2f")(d.properties.MedianHouseholdIncome) +
-          "</p><p>Residents Below Poverty Line (2010 Census): " +
-          d.properties.PctPoverty + "%</p>";
+// Highlight hovered 
+var mouse = d3.mouse(svg.node()).map(function(d) {
+	return parseInt(d);
+});
+var tooltext = "<p>" + d.properties.NAMELSAD10 +
+'</p><p>Amount of 2015 Unpaid Property Tax <br/>by "Deadbeat Investors": $' + d3.format(",.2f")(d.properties.totalOwedByTract) +
+"</p><p>Median Household Income (2010 Census): $" + d3.format(",.2f")(d.properties.MedianHouseholdIncome) +
+"</p><p>Residents Below Poverty Line (2010 Census): " +
+d.properties.PctPoverty + "%</p>";
 tooltip.classed('hidden', false)
-      /* .attr('style', 'left:' + (mouse[0] + 15) +
-                 'px; top:' + (mouse[1] - 35) + 'px') */
-                 .attr('style', 'right: 40' +
-                 'px; bottom: 40' + 'px')
-     .html(tooltext);
-               
+/* .attr('style', 'left:' + (mouse[0] + 15) +
+'px; top:' + (mouse[1] - 35) + 'px') */
+.attr('style', 'right: 40' +
+	'px; bottom: 40' + 'px')
+.html(tooltext);
 
-  d3.select(this).style('fill', 'grey');
-
+d3.select(this).style('fill', 'grey');
 }
 
 function mouseout(d){
-  // Reset province color
-  tooltip.classed('hidden', true);
-  mapLayer.selectAll('path')
-    .style('fill', function(d){return centered && d===centered ? 'yellow' : color(d.properties.totalOwedByTract)});
+// Reset province color
+tooltip.classed('hidden', true);
+mapLayer.selectAll('path')
+.style('fill', function(d){return centered && d===centered ? 'yellow' : color(d.properties.totalOwedByTract)});
 }
-
-
-
-
-
 </script>
-	</body>
+</body>
 </html>
