@@ -22,6 +22,12 @@
 			line-height: 1.5em;
 		}
 		
+		.script_link {
+		font-size: 0.8em;
+		text-align: center;
+    margin: 20px auto;
+}
+
 		#nav{
 			position: absolute;
 			top: 0;
@@ -142,11 +148,17 @@ padding-bottom:100px;
 <main>
 	<div class="innertube">
 		<h1>Worst 2015 Philadelphia Tax Delinquents</h1>
+		<p class="script_link"><a href="https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/scripts/First_Visualization.Rmd" target="_blank">See the R script that set up the following visualization.</a></p>
 		<div id="google_chart_div"></div> 
 		<p></p>
 				  <div id="d3_container">
   <h1>Philadelphia 2015 Deadbeat Investor Impact</h1>
+
+  		<p class="script_link"><a href="https://github.com/pm0kjp/Philadelphia_Property_Tax/blob/master/scripts/Second_Visualization.Rmd" target="_blank">See the R script that set up the following visualization.</a></p>
+
+
   <p style="text-align:center">Hover to see overdue property tax and other statistics, click to change zoom.</p>
+
 
    <svg id="d3_map"></svg>
   </div>
@@ -161,9 +173,9 @@ padding-bottom:100px;
 <p><b>Background:</b>  The City of Philadelphia (which is also a county) is one of the nation's poorest large cities, according to The Pew Charitable Trusts <sup><a href="#fn1">1</a></sup>.  With a poverty rate over 25% and large areas of the city experiencing blight, it is more important than ever that property taxes be collected promptly and correctly, to bolster city schools (which receive 55% of property tax, and are struggling <sup><a href="#fn2">2</a></sup>) and other important city budgets.  However, property tax delinquency has been largely ignored and unenforced.  A Philadelphia Inquirer investigation in 2013 shows that at least 59% of delinquent properties are owned by investors, not poverty-stricken families unable to pay. <sup><a href="#fn3">3</a></sup> </p>
 
 <div id="footnotes">
-  <p><a name="fn1">1</a>. <a href="http://www.philly.com/philly/news/politics/mayor/295762921.html">http://www.philly.com/philly/news/politics/mayor/295762921.html</a></p>
-  <p><a name="fn2">2</a>. <a href = "http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools">http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools</a></p>
-  <p><a name="fn3">3</a>. <a href = "http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion">http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion</a></p>
+  <p><a name="fn1">1</a>. <a href="http://www.philly.com/philly/news/politics/mayor/295762921.html" target="_blank">http://www.philly.com/philly/news/politics/mayor/295762921.html</a></p>
+  <p><a name="fn2">2</a>. <a href = "http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools" target="_blank">http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools</a></p>
+  <p><a name="fn3">3</a>. <a href = "http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion" target="_blank">http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion</a></p>
 
 </div>
 			</div>
