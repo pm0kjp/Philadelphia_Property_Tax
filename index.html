@@ -29,7 +29,7 @@
 			left: 0;
 			width: 350px; /* Width of navigation frame */
 			height: 100%;
-			overflow: hidden; /* Disables scrollbars on the navigation frame. To enable scrollbars, change "hidden" to "scroll" */
+			overflow: auto; /* Disables scrollbars on the navigation frame. To enable scrollbars, change "hidden" to "scroll" */
 			background: #eee;
 		}
 		
@@ -42,7 +42,13 @@
 			overflow: auto; 
 			background: #fff;
 		}
-		
+		 #footnotes {
+		 	margin-top:3em;
+		 	font-size: 0.6em;
+		 	word-wrap: break-all;
+		 }
+
+sup { vertical-align: top; position: relative; top: -0.5em; }		 
 		.innertube{
 			margin: 15px; /* Provides padding for the content */
 		}
@@ -152,8 +158,14 @@ padding-bottom:100px;
 			<div class="innertube">
 			
 			<h3>A Project by Joy Payton</h3>
-<p><b>Background:</b>  The City of Philadelphia (which is also a county) is one of the nation's poorest large cities, according to The Pew Charitable Trusts.  With a poverty rate over 25% and large areas of the city experiencing blight, it is more important than ever that property taxes be collected promptly and correctly, to bolster city schools (which receive 55% of property tax, and are struggling ) and other important city budgets.  However, property tax delinquency has been largely ignored and unenforced.  A Philadelphia Inquirer investigation in 2013 shows that at least 59% of delinquent properties are owned by investors, not poverty-stricken families unable to pay. </p>
+<p><b>Background:</b>  The City of Philadelphia (which is also a county) is one of the nation's poorest large cities, according to The Pew Charitable Trusts <sup><a href="#fn1">1</a></sup>.  With a poverty rate over 25% and large areas of the city experiencing blight, it is more important than ever that property taxes be collected promptly and correctly, to bolster city schools (which receive 55% of property tax, and are struggling <sup><a href="#fn2">2</a></sup>) and other important city budgets.  However, property tax delinquency has been largely ignored and unenforced.  A Philadelphia Inquirer investigation in 2013 shows that at least 59% of delinquent properties are owned by investors, not poverty-stricken families unable to pay. <sup><a href="#fn3">3</a></sup> </p>
 
+<div id="footnotes">
+  <p><a name="fn1">1</a>. <a href="http://www.philly.com/philly/news/politics/mayor/295762921.html">http://www.philly.com/philly/news/politics/mayor/295762921.html</a></p>
+  <p><a name="fn2">2</a>. <a href = "http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools">http://crossroads.newsworks.org/index.php/local/keystone-crossroads/81319-when-it-comes-to-education-funding-whats-the-deal-with-philly-schools</a></p>
+  <p><a name="fn3">3</a>. <a href = "http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion">http://planphilly.com/articles/2013/03/09/part-one-lax-property-tax-enforcement-and-brazen-deadbeat-investors-have-depressed-philadelphia-s-property-tax-base-by-9-5-billion</a></p>
+
+</div>
 			</div>
 		</nav>
 	<script>
