@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.17.0/d3-legend.min.js"></script>
+  
+  <script src="http://d3js.org/queue.v1.min.js"></script>
+<title>Philadelphia 2015 Overdue Property Tax</title>
+<style type="text/css">
+	p {
+  margin:10px;
+}
+
+#container {
+  padding-top: 1em;
+  width: "100%";
+  margin:1em auto;
+  background:oldlace;
+}
+
+h1, h2, .map{
+  margin:4px auto;
+  text-align:center;
+}
+.background {
+  fill: #eee;
+  pointer-events: all;
+}
+
+.map-layer {
+  fill: #fff;
+  stroke: #aaa;
+  width: 100%;
+}
+
+.map-area {
+  margin:0px auto;
+  width:75%;
+}
+
+
+    .hidden {
+        display: none;
+    }
+    div.tooltip {
+        color: #222;
+        background-color: #ffeecc;
+        padding: .5em;
+        text-shadow: #f5f5f5 0 1px 0;
+        border: 1px solid grey;
+        border-radius: 2px;
+        opacity: 0.8;
+        position: absolute;
+    }
+
+.map {
+  width:1000px;
+  height:1000px;
+  text-align:center;
+}
+
+
+
+</style>
+</head>
+<body>
+  <div id="container">
+  <h1>Philadelphia 2015 Deadbeat Investor Impact</h1>
+  <p style="text-align:center">Hover to see overdue property tax and other statistics, click to change zoom.</p>
+
+   <svg id="map"></svg>
+   <div id="textBlock"></div>
+  </div>
+
+
+
+<script>
+var selection = d3.select("#container"); 
+console.log();
+width = selection._groups["0"]["0"].clientWidth;
+var height = .8*width,
+    centered;
+var tooltip = d3.select('body').append('div')
+            .attr('class', 'hidden tooltip');
+// Define color scale
+var color = d3.scaleLinear()
+  .domain([0, 100000])
+  .range(['#fff', '#1d4418']);
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendLinear")
+  .attr("transform", "translate(20,20)");
+
+var legendLinear = d3.legendColor()
+  .shapeWidth(70)
+  .orient('vertical')
+  .scale(color)
+  .cells(11)
+  .labelFormat(d3.format("$,.0f"));
+
+svg.select(".legendLinear")
+  .call(legendLinear);
+
+var projection = d3.geoMercator()
+.scale(110*width)
+// Center the Map in Philly
+.center([-75.1, 40])
+.translate([width / 2, .38*width]);
+
+var path = d3.geoPath()
+  .projection(projection);
+
+// Set svg width & height
+var svg = d3.select('svg#map')
+  .attr('width', "100%")
+  .attr('height', height);
+
+
+var g = svg.append('g')
+.attr('class', "map-area");
+
+var effectLayer = g.append('g')
+  .classed('effect-layer', true);
+
+var mapLayer = g.append('g')
+  .classed('map-layer', true);
+
+queue()
+	.defer(d3.json, 'https://raw.githubusercontent.com/pm0kjp/Philadelphia_Property_Tax/master/data/enrichedPhilly.geojson')
+	.await(makeMyMap);
+// Load map data
+function makeMyMap(error, mapData) {
+  var features = mapData.features;
+
+
+  // Draw each tract as a path
+  mapLayer.selectAll('path')
+      .data(features)
+    .enter().append('path')
+      .attr('d', path)
+      .attr('vector-effect', 'non-scaling-stroke')
+      .style('fill', function(d) {
+  return(color(d.properties.totalOwedByTract))
+  })
+      .on('mouseover', mouseover)
+      .on('mouseout', mouseout)
+      .on('click', clicked)
+  ;
+}
+
+
+// When clicked, zoom in
+function clicked(d) {
+  var x, y, k;
+
+  // Compute centroid of the selected path
+  if (d && centered !== d) {
+    var centroid = path.centroid(d);
+    x = centroid[0];
+    y = centroid[1];
+    k = 4;
+    centered = d;
+  } else {
+    x = width / 2;
+    y = (width*.7) / 2;
+    k = 1;
+    centered = null;
+  }
+
+  // Highlight the clicked tract
+  mapLayer.selectAll('path')
+    .style('fill', function(d){return centered && d===centered ? 'yellow' :  function(d) {return(color(d.properties.totalOwedByTract));};
+  })
+
+  // Zoom
+  g.transition()
+    .duration(1000)
+    .attr('transform', 'translate(' + width / 2 + ',' + (width*.7) / 2 + ')scale(' + k + ')translate(' + -x + ',' + -y + ')');
+}
+
+function mouseover(d){
+  // Highlight hovered province
+   var mouse = d3.mouse(svg.node()).map(function(d) {
+                        return parseInt(d);
+                    });
+  var tooltext = "<p>" + d.properties.NAMELSAD10 +
+          '</p><p>Amount of 2015 Unpaid Property Tax <br/>by "Deadbeat Investors": $' + d3.format(",.2f")(d.properties.totalOwedByTract) +
+          "</p><p>Median Household Income (2010 Census): $" + d3.format(",.2f")(d.properties.MedianHouseholdIncome) +
+          "</p><p>Residents Below Poverty Line (2010 Census): " +
+          d.properties.PctPoverty + "%</p>";
+tooltip.classed('hidden', false)
+       .attr('style', 'left:' + (mouse[0] + 15) +
+                 'px; top:' + (mouse[1] - 35) + 'px')
+     .html(tooltext);
+               
+
+  d3.select(this).style('fill', 'grey');
+
+}
+
+function mouseout(d){
+  // Reset province color
+  tooltip.classed('hidden', true);
+  mapLayer.selectAll('path')
+    .style('fill', function(d){return centered && d===centered ? 'yellow' : color(d.properties.totalOwedByTract)});
+}
+
+
+
+
+
+</script>
